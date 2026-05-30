@@ -35,7 +35,10 @@ done
 
 # Make the upstream LICENSE reachable as a static file (MIT attribution) so the
 # README's `](LICENSE)` link resolves on the site.
-[ -f "$ROOT/LICENSE" ] && cp "$ROOT/LICENSE" "$DOCS/LICENSE"
+if [ -f "$ROOT/LICENSE" ]; then cp "$ROOT/LICENSE" "$DOCS/LICENSE"; fi
+
+# Overlay static assets (e.g. the Mermaid render shim) -> build/docs/assets/.
+if [ -d "$ROOT/deploy/assets" ]; then mkdir -p "$DOCS/assets"; cp -R "$ROOT/deploy/assets/." "$DOCS/assets/"; fi
 
 # Home page: leave README.md in place — MkDocs renders it as the site index (/),
 # and keeping the filename means the many `../README.md` cross-links keep resolving.
