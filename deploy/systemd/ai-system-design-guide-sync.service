@@ -1,0 +1,13 @@
+[Unit]
+Description=Sync ai-system-design-guide from upstream and rebuild/publish the site
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/root/ai-system-design-guide-src
+ExecStart=/usr/bin/bash /root/ai-system-design-guide-src/deploy/sync-and-deploy.sh
+# Keep last-good on failure; the timer retries next week.
+TimeoutStartSec=1800
+Nice=10

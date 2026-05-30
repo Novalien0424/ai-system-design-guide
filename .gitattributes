@@ -1,0 +1,12 @@
+# Keep everything LF in the repo. The deploy shell scripts run on the Linux box —
+# CRLF would break the shebang/`bash`. This guarantees LF regardless of any
+# machine's core.autocrlf setting.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary

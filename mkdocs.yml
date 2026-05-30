@@ -1,0 +1,96 @@
+# Site config for ai-system-design-guide.novalien.com — an ADDITIVE OVERLAY.
+# Upstream content is never modified; deploy/build.sh assembles build/docs from the
+# numbered chapter folders + root guides, and this config renders it. See CLAUDE.md.
+site_name: AI System Design Guide
+site_url: https://ai-system-design-guide.novalien.com
+site_description: >-
+  The complete interview & production reference for AI system design — RAG, agents,
+  MCP, evaluation, and real-world case studies. A continuously-synced mirror of
+  ombharatiya/ai-system-design-guide.
+site_author: Om Bharatiya (ombharatiya)
+copyright: >-
+  Content © Om Bharatiya — source:
+  <a href="https://github.com/ombharatiya/ai-system-design-guide" target="_blank" rel="noopener">ombharatiya/ai-system-design-guide</a>
+  (MIT). Mirror hosted on novalien.com, auto-synced weekly.
+
+repo_url: https://github.com/ombharatiya/ai-system-design-guide
+repo_name: ombharatiya/ai-system-design-guide
+edit_uri: ""
+
+# Assembled by deploy/build.sh — upstream files are copied here, never moved.
+docs_dir: build/docs
+site_dir: site
+
+# Prettify auto-generated section labels (e.g. "06-retrieval-systems" -> "Retrieval Systems").
+hooks:
+  - deploy/hooks/nav_titles.py
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.tracking
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - footnotes
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/ombharatiya/ai-system-design-guide
+      name: Source repository (ombharatiya)

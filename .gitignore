@@ -1,0 +1,12 @@
+# --- site overlay build artifacts (generated; never committed) ---
+/build/
+/site/
+.venv/
+venv/
+__pycache__/
+*.pyc
+.cache/
+.DS_Store
+
+# --- harness transient cache (not part of the overlay) ---
+.claude/tsc-cache/

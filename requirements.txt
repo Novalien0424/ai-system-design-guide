@@ -1,0 +1,3 @@
+# Local/CI build of the site overlay. The box builds via the pinned
+# squidfunk/mkdocs-material Docker image (see deploy/build.sh) — keep these in sync.
+mkdocs-material==9.6.22

@@ -1,0 +1,10 @@
+[Unit]
+Description=Weekly sync of ai-system-design-guide (follow upstream + republish)
+
+[Timer]
+OnCalendar=Mon *-*-* 04:00:00
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target
