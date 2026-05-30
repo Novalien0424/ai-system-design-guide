@@ -21,6 +21,11 @@ if ! flock -n 9 ; then log "another sync is running; abort"; exit 0; fi
 
 cd "$SRC"
 
+# A dedicated deploy clone: pin a git identity so an unattended merge commit can be
+# created even on a fresh root checkout with no global user.name/user.email.
+git config user.name  "asdg-sync"
+git config user.email "deploy@ai-system-design-guide.novalien.com"
+
 log "fetch origin (overlay) + upstream (content)"
 git fetch --quiet origin
 git fetch --quiet upstream
@@ -51,11 +56,14 @@ fi
 
 log "publish ${PAGES} pages -> ${WEB}"
 mkdir -p "$WEB"
-# --delay-updates stages every changed file and batch-renames them into place at the
-# very end, so an interrupted/failed transfer leaves the previous site intact (last-good
-# preserved). A full directory swap is avoided on purpose: the served path is a Docker
-# bind-mount, so `mv`-ing the directory would leave Caddy serving the old inode.
-rsync -a --delete --delay-updates site/ "$WEB/"
+# Near-atomic publish that preserves last-good if interrupted:
+#   --delay-updates : transfer updated files to temp names, batch-rename them all at the end
+#   --delete-delay  : compute deletions during transfer, but APPLY them only after it succeeds
+# So an interrupted/failed transfer leaves the previous site fully intact (no delete-during).
+# A full directory swap is avoided on purpose: the served path is a Docker bind-mount, so
+# `mv`-ing the directory would leave Caddy serving the old inode. `site/` is already a
+# complete, health-checked build (it is effectively the staging dir).
+rsync -a --delete-delay --delay-updates site/ "$WEB/"
 echo "$(git rev-parse --short HEAD) @ $(date -Iseconds) (${PAGES} pages)" > "$WEB/.version"
 
 # No Caddy reload needed: file_server serves the directory live; only Caddyfile
