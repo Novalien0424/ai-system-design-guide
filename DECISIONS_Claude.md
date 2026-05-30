@@ -3,6 +3,14 @@
 <!-- Claude Code session/working decision log: what, why, when. Append newest at top.
      Full design rationale: docs/superpowers/specs/2026-05-30-novalien-mkdocs-site-design.md -->
 
+## 2026-05-30 — Deploy session (site went LIVE)
+- **Cloudflare stays PROXIED (orange) — do NOT force grey.** Why: all existing novalien.com sites on this box are CF-proxied with plain Caddy vhosts (no `tls` directive); Caddy completes the LE HTTP-01 challenge *through* the proxy and gets a real cert. Confirmed live (cert obtained for our host). Rejected: switching to DNS-only (would diverge from the box convention; proxy gives caching/DDoS/origin-hiding).
+- **Declared the shared Caddy network `external: true`.** Why: `n8n-docker-caddy_default` predates compose's labels (empty `com.docker.compose.network`), so `docker compose up` refused to recreate the caddy container to pick up the new mount. Declaring the existing network external lets compose recreate without relabelling. Safe (all services already use it); validated with `docker compose config` before recreate; neighbor sites verified 200 after. Rejected: recreating the network (would disconnect every service).
+- **Publish with `rsync --delete-delay --delay-updates`, not a dir swap.** Why: the served path is a Docker bind-mount, so `mv`-ing the directory leaves Caddy on the old inode; `--delete-delay` applies deletions only after a successful transfer, so an interrupted publish keeps last-good. (codex P1.)
+- **Pin a git identity inside `sync-and-deploy.sh`.** Why: the first non-fast-forward upstream merge on the root checkout would otherwise fail "Committer identity unknown" and stop the weekly sync. (codex P2.)
+- **Mermaid render shim (`deploy/assets/mermaid-init.js`).** Why: Material loads mermaid from its CDN but its auto-render misses the first paint (race with `navigation.instant`); the shim issues an idempotent `mermaid.run()` on load + each instant-nav swap. Verified rendering live. Rejected: removing `navigation.instant` (unproven fix; loses the snappy nav).
+- **Build location = the box (Docker `squidfunk/mkdocs-material:9.6.22`).** Why: reproducible, nothing installed on the host. Windows local preview uses the venv (Git-Bash + Docker mangles the `-v` path).
+
 ## 2026-05-30 — Project kickoff: publish the guide as an auto-syncing website
 
 - **D-overlay (core): additive overlay — never edit upstream content.** Why: every overlay file is a new path upstream doesn't have, so `git merge upstream/main` is always conflict-free, which is what makes unattended weekly sync safe. Rejected: editing/restructuring upstream markdown (would conflict on every sync), forking the content (defeats "follow the latest").
