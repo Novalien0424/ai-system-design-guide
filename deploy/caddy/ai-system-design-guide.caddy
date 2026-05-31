@@ -15,11 +15,15 @@ ai-system-design-guide.novalien.com {
 		Referrer-Policy "strict-origin-when-cross-origin"
 	}
 
-	@hashed path_regexp ^/assets/.+$
-	header @hashed Cache-Control "public, max-age=31536000, immutable"
+	# Immutable ONLY for content-fingerprinted build assets (e.g. main.84d31ad4.min.css).
+	# A hash segment like ".84d31ad4." in the path is the fingerprint signal.
+	@fingerprinted path_regexp \.[0-9a-f]{8,}\.
+	header @fingerprinted Cache-Control "public, max-age=31536000, immutable"
 
-	@html path *.html */
-	header @html Cache-Control "public, max-age=300, must-revalidate"
+	# Everything else — HTML and UNHASHED overlay assets (slash.css, mermaid-init.js) —
+	# gets a short, revalidated cache so fixes propagate in minutes, not a year.
+	@revalidate not path_regexp \.[0-9a-f]{8,}\.
+	header @revalidate Cache-Control "public, max-age=300, must-revalidate"
 
 	log {
 		output file /var/log/caddy/ai-system-design-guide.log

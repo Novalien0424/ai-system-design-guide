@@ -28,6 +28,9 @@ hooks:
 theme:
   name: material
   language: en
+  # We load Inter + Playfair Display from Google Fonts inside deploy/assets/slash.css.
+  # Disable Material's own Google Fonts injection so loading lives in one place.
+  font: false
   features:
     - navigation.instant
     - navigation.instant.progress
@@ -41,26 +44,20 @@ theme:
     - search.share
     - content.code.copy
     - content.code.annotate
+  # Dark-only "Slash / Midnight Ledger" (docs/DESIGN.md). No light variant by design;
+  # exact colours are remapped onto the slate scheme in deploy/assets/slash.css.
   palette:
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: indigo
-      accent: indigo
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: indigo
-      accent: indigo
-      toggle:
-        icon: material/brightness-4
-        name: Switch to light mode
+    scheme: slate
+    primary: black
+    accent: amber
   icon:
     repo: fontawesome/brands/github
 
 plugins:
   - search
+
+extra_css:
+  - assets/slash.css
 
 extra_javascript:
   - assets/mermaid-init.js

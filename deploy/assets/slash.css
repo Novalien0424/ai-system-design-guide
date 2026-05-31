@@ -1,0 +1,367 @@
+/* ==========================================================================
+   Slash — "Midnight Ledger / Obsidian Surfaces"
+   Design-system overlay for ai-system-design-guide.novalien.com
+   Implements docs/DESIGN.md on top of MkDocs Material.
+
+   ADDITIVE OVERLAY: this stylesheet (loaded via `extra_css`) is the ONLY thing
+   that restyles the site. Material's bundled CSS and all upstream content are
+   left untouched, so `git merge upstream/main` stays conflict-free.
+
+   The source spec describes a marketing site; adaptations for a long-form docs
+   site are noted inline — chiefly a looser reading line-height while keeping the
+   spec's tight letter-spacing, near-black layered surfaces, and colour ramp.
+   ========================================================================== */
+
+/* 1 ───────────────────────────────────────────────  Web fonts (Google CDN) */
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..700;1,14..32,300..700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap");
+
+/* 2 ───────────────────────────────────────────────────────  Design tokens */
+:root {
+  /* Surfaces — levels 0-4 from the spec */
+  --slash-ink:       #000000; /* L0  page background        */
+  --slash-obsidian:  #030304; /* L1  header / subtle lift   */
+  --slash-charcoal:  #08080a; /* L2  panels / cards         */
+  --slash-pewter:    #121317; /* L3  code / interactive     */
+  --slash-slate:     #1c1d22; /* L4  selected / inline code */
+
+  /* Text ramp */
+  --slash-ash:       #5e616e;
+  --slash-stone:     #777a88;
+  --slash-silver:    #acafb9;
+  --slash-porcelain: #cdcdcd;
+  --slash-frost:     #e2e3e9;
+  --slash-white:     #ffffff;
+
+  /* Accent — gold (decorative only, per the spec; never a solid page colour) */
+  --slash-gold:        #cc9166;
+  --slash-gold-bright: #ecd0a6;
+  --slash-gold-gradient: linear-gradient(103deg, #ae9357 0%, #fff0cc 40%, #ae9357 70%, rgba(189, 157, 79, 0) 100%);
+
+  /* Hairlines — white at low alpha gives shadow-free elevation */
+  --slash-line:        rgba(226, 227, 233, 0.09);
+  --slash-line-strong: rgba(226, 227, 233, 0.16);
+
+  /* Type */
+  --slash-sans:    "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --slash-display: "Playfair Display", Georgia, Cambria, "Times New Roman", serif;
+  --slash-mono:    ui-monospace, SFMono-Regular, "SF Mono", "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* Shape */
+  --slash-radius:    10px;
+  --slash-radius-sm: 2px;
+  --slash-pill:      9999px;
+
+  /* Wire Material's text-font hook to ours (theme.font is disabled in mkdocs.yml) */
+  --md-text-font: "Inter";
+}
+
+/* 3 ─────────────────────────────  Material colour mapping (dark-only slate)
+   The site is locked to the "slate" scheme (mkdocs.yml), so we remap Material's
+   slate custom properties onto the Slash palette in one place. */
+[data-md-color-scheme="slate"] {
+  --md-default-bg-color:           var(--slash-ink);
+  --md-default-bg-color--light:    var(--slash-obsidian);
+  --md-default-bg-color--lighter:  var(--slash-charcoal);
+  --md-default-bg-color--lightest: var(--slash-pewter);
+
+  --md-default-fg-color:           var(--slash-frost);
+  --md-default-fg-color--light:    rgba(226, 227, 233, 0.66);
+  --md-default-fg-color--lighter:  rgba(226, 227, 233, 0.40);
+  --md-default-fg-color--lightest: rgba(226, 227, 233, 0.12);
+
+  --md-primary-fg-color:           var(--slash-ink);
+  --md-primary-fg-color--light:    var(--slash-charcoal);
+  --md-primary-fg-color--dark:     var(--slash-ink);
+  --md-primary-bg-color:           var(--slash-white);
+  --md-primary-bg-color--light:    rgba(255, 255, 255, 0.72);
+
+  --md-accent-fg-color:            var(--slash-gold);
+  --md-accent-fg-color--transparent: rgba(204, 145, 102, 0.12);
+  --md-accent-bg-color:            var(--slash-ink);
+  --md-accent-bg-color--light:     var(--slash-charcoal);
+
+  --md-typeset-color:              var(--slash-frost);
+  --md-typeset-a-color:            var(--slash-gold);
+  --md-typeset-mark-color:         rgba(204, 145, 102, 0.28);
+  --md-typeset-kbd-color:          var(--slash-slate);
+  --md-typeset-kbd-accent-color:   var(--slash-pewter);
+  --md-typeset-kbd-border-color:   #2a2c33;
+  --md-typeset-table-color:        var(--slash-line-strong);
+
+  --md-code-fg-color:              #d9dbe2;
+  --md-code-bg-color:              var(--slash-pewter);
+
+  --md-footer-fg-color:            var(--slash-frost);
+  --md-footer-fg-color--light:     rgba(226, 227, 233, 0.50);
+  --md-footer-fg-color--lighter:   rgba(226, 227, 233, 0.30);
+  --md-footer-bg-color:            var(--slash-ink);
+  --md-footer-bg-color--dark:      #000000;
+
+  /* Spec elevates with surface shifts, not shadows — neutralise drop shadows. */
+  --md-shadow-z1: 0 0 0 1px var(--slash-line);
+  --md-shadow-z2: 0 0 0 1px var(--slash-line);
+  --md-shadow-z3: 0 0 0 1px var(--slash-line-strong);
+}
+
+/* 4 ──────────────────────────────────────────────────────  Base & layout */
+body, input, button {
+  font-family: var(--slash-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+.md-main, .md-container { background-color: var(--slash-ink); }
+
+/* Centred shell at the spec's 1216px page max-width. (Material's rem is 20px, so
+   this is set in px to stay exact; it also tightens the content column to a
+   comfortable reading measure between the two sidebars.) */
+.md-grid { max-width: 1216px; }
+
+:focus-visible { outline: 2px solid var(--slash-gold); outline-offset: 2px; }
+
+/* 5 ────────────────────────────────────────────────────────  Typography */
+.md-typeset {
+  font-size: 0.8rem;          /* 16px — spec "body" */
+  line-height: 1.72;          /* docs adaptation: looser than the spec's 1.38 */
+  letter-spacing: -0.011em;
+  color: var(--slash-frost);
+}
+.md-typeset p,
+.md-typeset ul,
+.md-typeset ol,
+.md-typeset dl { margin: 0 0 1.1em; }
+.md-typeset li { margin-bottom: 0.35em; line-height: 1.7; }
+
+/* Headings — Playfair Display for display sizes, Inter for the rest. */
+.md-typeset h1,
+.md-typeset h2 {
+  font-family: var(--slash-display);
+  font-weight: 500;
+  color: var(--slash-white);
+}
+.md-typeset h1 {
+  font-size: 2.05em;
+  line-height: 1.14;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.7em;
+}
+.md-typeset h2 {
+  font-size: 1.5em;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  margin: 2.4em 0 0.8em;
+  padding-bottom: 0.34em;
+  border-bottom: 1px solid var(--slash-line);
+}
+.md-typeset h3,
+.md-typeset h4,
+.md-typeset h5,
+.md-typeset h6 { font-family: var(--slash-sans); font-weight: 600; }
+.md-typeset h3 {
+  font-size: 1.22em;
+  letter-spacing: -0.01em;
+  color: var(--slash-white);
+  margin: 2em 0 0.6em;
+}
+.md-typeset h4 {
+  font-size: 1em;
+  color: var(--slash-frost);
+  margin: 1.6em 0 0.5em;
+}
+.md-typeset h5,
+.md-typeset h6 {
+  font-size: 0.78em;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 1.6em 0 0.4em;
+}
+.md-typeset h5 { color: var(--slash-stone); }
+.md-typeset h6 { color: var(--slash-ash); }
+
+/* Heading anchors */
+.md-typeset .headerlink { color: var(--slash-line-strong); }
+.md-typeset :hover > .headerlink,
+.md-typeset .headerlink:focus { color: var(--slash-gold); }
+
+/* Links — gold, with a quiet underline that warms on hover. */
+.md-typeset a {
+  color: var(--slash-gold);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.md-typeset a:hover,
+.md-typeset a:focus {
+  color: var(--slash-gold-bright);
+  border-bottom-color: rgba(204, 145, 102, 0.5);
+}
+
+.md-typeset blockquote {
+  color: var(--slash-silver);
+  border-left: 2px solid var(--slash-gold);
+  background: rgba(204, 145, 102, 0.04);
+  border-radius: 0 var(--slash-radius-sm) var(--slash-radius-sm) 0;
+}
+.md-typeset hr { border-bottom: 1px solid var(--slash-line); }
+
+/* 6 ──────────────────────────────────────────────────────────  Header */
+.md-header {
+  background-color: var(--slash-ink);
+  color: var(--slash-frost);
+  border-bottom: 1px solid var(--slash-line);
+  box-shadow: none;
+}
+.md-header--shadow { box-shadow: none; }     /* kill the on-scroll drop shadow */
+.md-header__title { font-weight: 600; letter-spacing: -0.01em; color: var(--slash-white); }
+.md-header__button { color: var(--slash-silver); }
+.md-header__button:hover { color: var(--slash-white); }
+
+/* Header search — Pill Input Field from the spec. */
+.md-search__form {
+  background-color: var(--slash-pewter);
+  border-radius: var(--slash-pill);
+  box-shadow: none;
+}
+.md-search__form:hover { background-color: var(--slash-slate); }
+.md-search__input { color: var(--slash-frost); }
+.md-search__input::placeholder { color: var(--slash-stone); }
+.md-search__icon { color: var(--slash-silver); }
+.md-search__scrollwrap { background-color: var(--slash-charcoal); }
+.md-search-result__meta {
+  background-color: var(--slash-pewter);
+  color: var(--slash-silver);
+}
+.md-search-result__link:is(:hover, [data-md-state="active"]) {
+  background-color: var(--slash-pewter);
+}
+.md-search-result mark { color: var(--slash-gold-bright); }
+
+/* 7 ────────────────────────────────────────────────────────  Sidebars */
+.md-nav { font-size: 0.7rem; }
+.md-nav__title { color: var(--slash-frost); font-weight: 600; }
+
+/* Section group labels (navigation.sections) — quiet uppercase captions. */
+.md-nav__item--section > .md-nav__link[for],
+.md-nav--primary .md-nav__item--section > .md-nav__link {
+  color: var(--slash-silver); /* silver (not stone) for AA contrast on the near-black rail */
+  font-size: 0.66rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.md-nav__link { color: var(--slash-silver); border-radius: var(--slash-radius-sm); transition: color 0.12s ease; }
+.md-nav__link:hover,
+.md-nav__link:focus { color: var(--slash-gold-bright); }
+.md-nav__link--active,
+.md-nav__item--active > .md-nav__link {
+  color: var(--slash-white);
+  font-weight: 600;
+}
+.md-sidebar--secondary .md-nav__link--active { color: var(--slash-gold); }
+
+/* 8 ────────────────────────────────────────────────────────────  Code */
+.md-typeset code,
+.md-typeset pre,
+.md-typeset kbd { font-family: var(--slash-mono); }
+.md-typeset code { font-size: 0.84em; }
+
+.md-typeset :not(pre) > code {
+  background-color: var(--slash-slate);
+  color: #d7d9e0;
+  border-radius: var(--slash-radius-sm);
+  padding: 0.12em 0.38em;
+}
+.md-typeset pre > code { border-radius: var(--slash-radius); }
+.md-typeset .highlight > pre > code,
+.md-typeset pre > code {
+  border: 1px solid var(--slash-line);
+}
+.md-clipboard { color: var(--slash-stone); }
+.md-clipboard:hover { color: var(--slash-gold); }
+
+/* 9 ──────────────────────────────────────────  Admonitions & details (cards)
+   Keep Material's per-type left border/icon colour for semantics; only restyle
+   the surface to a dark card with no heavy shadow. */
+.md-typeset .admonition,
+.md-typeset details {
+  background-color: var(--slash-charcoal);
+  border-radius: var(--slash-radius);
+  box-shadow: none;
+  font-size: 0.75rem;
+}
+.md-typeset .admonition-title,
+.md-typeset summary { font-weight: 600; }
+
+/* 10 ──────────────────────────────────────────────────────────  Tables */
+.md-typeset table:not([class]) {
+  background-color: var(--slash-charcoal);
+  border: 1px solid var(--slash-line);
+  border-radius: var(--slash-radius);
+  font-size: 0.74rem;
+}
+.md-typeset table:not([class]) th {
+  background-color: var(--slash-slate);
+  color: var(--slash-white);
+  font-weight: 600;
+}
+.md-typeset table:not([class]) td { border-top: 1px solid var(--slash-line); }
+.md-typeset table:not([class]) tr:hover { background-color: rgba(255, 255, 255, 0.02); }
+
+/* 11 ─────────────────────────────────────────────────  Buttons (pill) */
+.md-typeset .md-button {
+  border-radius: var(--slash-pill);
+  border: 1px solid var(--slash-frost);
+  color: var(--slash-frost);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.md-typeset .md-button:hover,
+.md-typeset .md-button:focus {
+  background-color: var(--slash-white);
+  border-color: var(--slash-white);
+  color: var(--slash-ink);
+}
+.md-typeset .md-button--primary {
+  background-color: var(--slash-white);
+  border-color: var(--slash-white);
+  color: var(--slash-ink);
+}
+.md-typeset .md-button--primary:hover,
+.md-typeset .md-button--primary:focus {
+  background-color: var(--slash-frost);
+  border-color: var(--slash-frost);
+  color: var(--slash-ink);
+}
+
+/* 12 ──────────────────────────────────────────────────────────  Footer */
+.md-footer { background-color: var(--slash-ink); }
+.md-footer-meta { background-color: #000000; border-top: 1px solid var(--slash-line); }
+.md-copyright { color: var(--slash-stone); }
+.md-copyright a { color: var(--slash-silver); }
+.md-footer a:hover { color: var(--slash-gold); }
+.md-footer__link:hover { opacity: 1; color: var(--slash-white); }
+.md-footer__title { background-color: transparent; }
+
+/* 13 ──────────────────────────────────────────────────────────  Misc */
+::selection { background: rgba(204, 145, 102, 0.30); color: #ffffff; }
+
+* { scrollbar-width: thin; scrollbar-color: #2a2c33 transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: #2a2c33; border-radius: var(--slash-pill); }
+::-webkit-scrollbar-thumb:hover { background: #3a3d46; }
+
+/* Mermaid diagrams on a subtle card (Material themes the SVG to the palette). */
+.md-typeset .mermaid {
+  background-color: var(--slash-charcoal);
+  border: 1px solid var(--slash-line);
+  border-radius: var(--slash-radius);
+  padding: 1rem;
+  margin: 1.2em 0;
+}
+
+/* Tabbed content (pymdownx.tabbed) */
+.md-typeset .tabbed-labels > label { color: var(--slash-silver); font-weight: 500; }
+.md-typeset .tabbed-labels > label:hover { color: var(--slash-gold); }
+.md-typeset .tabbed-set > input:checked + label { color: var(--slash-white); }
