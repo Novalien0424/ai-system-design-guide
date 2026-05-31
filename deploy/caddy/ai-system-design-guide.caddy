@@ -15,15 +15,22 @@ ai-system-design-guide.novalien.com {
 		Referrer-Policy "strict-origin-when-cross-origin"
 	}
 
-	# Immutable ONLY for content-fingerprinted build assets (e.g. main.84d31ad4.min.css).
-	# A hash segment like ".84d31ad4." in the path is the fingerprint signal.
-	@fingerprinted path_regexp \.[0-9a-f]{8,}\.
-	header @fingerprinted Cache-Control "public, max-age=31536000, immutable"
+	# Long-cache Material's content-fingerprinted build assets (e.g.
+	# main.84d31ad4.min.css) — their URL changes on every edit, so a 1-year
+	# immutable cache is safe. EXCLUDE our unhashed overlay assets, whose URLs
+	# never change and so must stay revalidated.
+	@immutable {
+		path /assets/*
+		not path /assets/slash.css /assets/mermaid-init.js
+	}
+	header @immutable Cache-Control "public, max-age=31536000, immutable"
 
-	# Everything else — HTML and UNHASHED overlay assets (slash.css, mermaid-init.js) —
-	# gets a short, revalidated cache so fixes propagate in minutes, not a year.
-	@revalidate not path_regexp \.[0-9a-f]{8,}\.
-	header @revalidate Cache-Control "public, max-age=300, must-revalidate"
+	# Short, revalidated cache for HTML and our unhashed overlay assets, so CSS/JS
+	# fixes propagate in minutes rather than being pinned for a year. Exact paths +
+	# globs avoid Caddyfile regex backslash/`{n,}`-placeholder escaping gotchas
+	# (codex review P3).
+	@shortlived path *.html */ /assets/slash.css /assets/mermaid-init.js
+	header @shortlived Cache-Control "public, max-age=300, must-revalidate"
 
 	log {
 		output file /var/log/caddy/ai-system-design-guide.log
