@@ -2,7 +2,17 @@
 
 <!-- Claude Code session-state snapshot. Update at clock-out. Design: docs/superpowers/specs/2026-05-30-novalien-mkdocs-site-design.md · Decisions: DECISIONS_Claude.md. -->
 
-_Updated: 2026-05-30 · **✅ LIVE & AUTO-SYNCING.** `https://ai-system-design-guide.novalien.com` serves the MkDocs Material mirror (HTTP 200, valid LE cert via Cloudflare). Weekly upstream auto-sync timer enabled. Last published: `fc20db0`, 129 pages._
+_Updated: 2026-05-31 · **✅ LIVE & AUTO-SYNCING — restyled to the "Slash / Midnight Ledger" dark theme (docs/DESIGN.md).** `https://ai-system-design-guide.novalien.com` (HTTP 200, valid LE cert via Cloudflare). Weekly upstream auto-sync timer enabled. Last published: `df5e334`, 129 pages._
+
+## P6 — Frontend restyle (2026-05-31, LIVE & verified)
+- **Slash dark theme** as a CSS-only additive overlay (`deploy/assets/slash.css` + `extra_css`; no Material templates / upstream content touched): dark-only slate palette → Slash tokens, Inter + Playfair Display (Google Fonts `@import`, `theme.font:false`), gold `#cc9166` accents, themed header/search/sidebar/TOC/code/tables/admonitions/footer/mermaid.
+- **Layout (user asks):** full-bleed rails (nav + TOC at viewport edges, `.md-grid{max-width:none}`), roomier centred reading column (`.md-content__inner{max-width:62rem}`); looser nav/TOC vertical rhythm (~8px rows, 1.45 lh).
+- **Mobile/responsive polish** (no service-worker PWA by choice — weekly auto-sync would make an offline cache stale): drawer themed, ~44px touch targets, phone type scale, guaranteed horizontal scroll for wide code/tables/mermaid. Verified at 390px (no page overflow; tables/pre scroll internally).
+- **Themed icon** `deploy/assets/asdg-icon.svg` (gold slash on midnight) as `theme.logo`+`theme.favicon`. PNG 192/512 = follow-up (no PNG tooling on box).
+- **Caddy cache fix (codex P3):** `immutable` now scoped to fingerprinted assets only; unhashed overlays (`slash.css`,`mermaid-init.js`) + HTML get `max-age=300, must-revalidate`. Live block swapped (backup + validate + reload; neighbors verified 200).
+- **Cache-bust** `slash.css?v=20260531` — a stale 404 had been pinned in Cloudflare (cf HIT) under the old immutable rule before the file existed; the version query forced a fresh edge key (verified cf MISS → 200).
+- **codex review** ran on the committed diff; its findings addressed (P3 cache regex → robust exact-path matcher). Reverted one unjustified font-template refactor I'd wrongly attributed to codex.
+- Commits: `0ef1c6f` theme · `899d6b5` caddy cache · `6b12f9e` layout+spacing+cachebust · `df5e334` mobile+icon. All on `origin/main`, all deployed.
 
 ## In progress (WIP = 1)
 - (none) — project delivered end-to-end and verified live.
