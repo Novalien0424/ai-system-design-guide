@@ -57,7 +57,11 @@ plugins:
   - search
 
 extra_css:
-  - assets/slash.css
+  # ?v= cache-bust: a stale 404 for the bare /assets/slash.css got pinned in
+  # Cloudflare under the old immutable rule; the version query is a fresh edge
+  # cache key. Bump it whenever a hard edge-purge is needed. (Caddy matches on
+  # path only, so the cache-control rules still apply to this URL.)
+  - assets/slash.css?v=20260531
 
 extra_javascript:
   - assets/mermaid-init.js

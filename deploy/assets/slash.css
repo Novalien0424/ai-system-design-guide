@@ -112,10 +112,23 @@ body, input, button {
 }
 .md-main, .md-container { background-color: var(--slash-ink); }
 
-/* Centred shell at the spec's 1216px page max-width. (Material's rem is 20px, so
-   this is set in px to stay exact; it also tightens the content column to a
-   comfortable reading measure between the two sidebars.) */
-.md-grid { max-width: 1216px; }
+/* Full-bleed shell: the nav rail and TOC sit at the viewport edges (no centred
+   max-width), so the content column gets the maximum room. Long-form prose is
+   then bounded to a comfortable measure via .md-content__inner below, so lines
+   never stretch unreadably wide on large displays. (Material's rem is 20px.) */
+.md-grid { max-width: none; }
+
+/* Roomier reading column than the old 1216px shell, but still capped + centred so
+   body text keeps a legible measure on wide monitors. Code blocks, tables and
+   Mermaid diagrams (which benefit from width) are allowed to run full-width. */
+.md-content { max-width: 100%; }
+.md-content__inner { max-width: 62rem; margin-left: auto; margin-right: auto; }
+.md-content__inner > .highlight,
+.md-content__inner > .highlighttable,
+.md-content__inner > pre,
+.md-content__inner > .md-typeset__table,
+.md-content__inner > .md-typeset__scrollwrap,
+.md-content__inner > .mermaid { max-width: none; }
 
 :focus-visible { outline: 2px solid var(--slash-gold); outline-offset: 2px; }
 
@@ -365,3 +378,51 @@ body, input, button {
 .md-typeset .tabbed-labels > label { color: var(--slash-silver); font-weight: 500; }
 .md-typeset .tabbed-labels > label:hover { color: var(--slash-gold); }
 .md-typeset .tabbed-set > input:checked + label { color: var(--slash-white); }
+
+/* ==========================================================================
+   SLASH REFINEMENTS v1 — layout width, nav/TOC reading spacing, mobile.
+   Appended last so these rules win on equal specificity. See DESIGN.md.
+   ========================================================================== */
+
+/* (1) Full-bleed shell: nav rail + TOC sit at the viewport edges; the content
+   column gets the room. Re-asserted here append-safe. Body prose is capped to a
+   legible measure and centred; width-hungry blocks may still run full column. */
+.md-grid { max-width: none; }
+.md-content { max-width: 100%; }
+.md-content__inner { max-width: 62rem; margin-left: auto; margin-right: auto; }
+.md-content__inner > .highlight,
+.md-content__inner > .highlighttable,
+.md-content__inner > pre,
+.md-content__inner > .md-typeset__table,
+.md-content__inner > .md-typeset__scrollwrap,
+.md-content__inner > .mermaid { max-width: none; }
+
+/* Let the side rails breathe away from the very edge without a centred shell. */
+.md-sidebar--primary { padding-left: 0.6rem; }
+.md-sidebar--secondary { padding-right: 0.6rem; }
+
+/* (2) Sidebar nav + right-hand TOC: looser vertical rhythm so dense topic lists
+   are scannable (DESIGN.md compact density — ~8px row padding, 1.5 line-height). */
+.md-nav { font-size: 0.72rem; line-height: 1.5; }
+.md-nav__item { margin-top: 0.18rem; }
+.md-nav__link {
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+  line-height: 1.45;
+}
+/* Nested topic lists get a clearer indent guide + a touch more left inset. */
+.md-nav--primary .md-nav__list .md-nav__list { margin-left: 0.5rem; }
+.md-nav--secondary .md-nav__link { padding-top: 0.34rem; padding-bottom: 0.34rem; }
+
+/* (3) Mobile: the slate drawer + header should match the theme, and the prose
+   cap must never fight a small viewport. Material flips to drawers <76.25em. */
+@media screen and (max-width: 76.1875em) {
+  .md-content__inner { max-width: none; }
+  .md-nav--primary .md-nav__title { background-color: var(--slash-obsidian); color: var(--slash-white); }
+  .md-nav--primary { background-color: var(--slash-ink); }
+  .md-nav__source { background-color: var(--slash-charcoal); }
+}
+@media screen and (max-width: 44.9375em) {
+  .md-typeset { font-size: 0.82rem; }        /* a hair larger for phone reading */
+  .md-typeset h1 { font-size: 1.8em; }
+}
