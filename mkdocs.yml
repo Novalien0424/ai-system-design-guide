@@ -50,6 +50,10 @@ theme:
     scheme: slate
     primary: black
     accent: amber
+  # Themed mark (gold slash on midnight) used as the header logo + browser
+  # favicon / "add to home screen" icon. SVG overlay asset; copied by build.sh.
+  logo: assets/asdg-icon.svg
+  favicon: assets/asdg-icon.svg
   icon:
     repo: fontawesome/brands/github
 

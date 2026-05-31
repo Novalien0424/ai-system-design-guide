@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="AI System Design Guide">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ae9357"/>
+      <stop offset="0.4" stop-color="#fff0cc"/>
+      <stop offset="0.7" stop-color="#ae9357"/>
+      <stop offset="1" stop-color="#bd9d4f"/>
+    </linearGradient>
+  </defs>
+  <!-- Midnight canvas with a hairline edge (Slash / Midnight Ledger) -->
+  <rect width="512" height="512" rx="112" fill="#000000"/>
+  <rect x="6" y="6" width="500" height="500" rx="106" fill="none" stroke="#e2e3e9" stroke-opacity="0.14" stroke-width="6"/>
+  <!-- Golden slash — the "Slash" mark -->
+  <path d="M312 120 L218 392" fill="none" stroke="url(#g)" stroke-width="46" stroke-linecap="round"/>
+  <!-- Two ledger rules flanking the slash -->
+  <path d="M150 300 L196 300" fill="none" stroke="#e2e3e9" stroke-opacity="0.55" stroke-width="22" stroke-linecap="round"/>
+  <path d="M334 212 L380 212" fill="none" stroke="#e2e3e9" stroke-opacity="0.55" stroke-width="22" stroke-linecap="round"/>
+</svg>

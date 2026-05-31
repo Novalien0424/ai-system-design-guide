@@ -414,15 +414,51 @@ body, input, button {
 .md-nav--primary .md-nav__list .md-nav__list { margin-left: 0.5rem; }
 .md-nav--secondary .md-nav__link { padding-top: 0.34rem; padding-bottom: 0.34rem; }
 
-/* (3) Mobile: the slate drawer + header should match the theme, and the prose
-   cap must never fight a small viewport. Material flips to drawers <76.25em. */
+/* (3) Mobile / touch polish. Material flips the rails into slide-in drawers
+   below 76.25em; tablet/phone refinements below keep the dark theme consistent,
+   widen tap targets to ~44px, and guarantee wide content scrolls instead of
+   overflowing. (Responsive polish — no service worker; the site auto-syncs
+   weekly, so an offline cache would risk stale content.) */
 @media screen and (max-width: 76.1875em) {
+  /* Reading column spans the drawer-freed width on tablets/phones. */
   .md-content__inner { max-width: none; }
-  .md-nav--primary .md-nav__title { background-color: var(--slash-obsidian); color: var(--slash-white); }
-  .md-nav--primary { background-color: var(--slash-ink); }
+
+  /* Drawer surfaces match the Slash palette (Material's default is lighter). */
+  .md-nav--primary,
+  .md-nav--primary .md-nav__title {
+    background-color: var(--slash-ink);
+    color: var(--slash-white);
+  }
+  .md-nav--primary .md-nav__title { border-bottom: 1px solid var(--slash-line); }
   .md-nav__source { background-color: var(--slash-charcoal); }
+
+  /* Comfortable touch targets in the drawer (≈44px rows). */
+  .md-nav--primary .md-nav__link {
+    padding-top: 0.7rem;
+    padding-bottom: 0.7rem;
+  }
+
+  /* Full-screen search overlay surfaces. */
+  .md-search__output,
+  [data-md-toggle="search"]:checked ~ .md-header .md-search__inner { background-color: var(--slash-ink); }
 }
+
 @media screen and (max-width: 44.9375em) {
-  .md-typeset { font-size: 0.82rem; }        /* a hair larger for phone reading */
-  .md-typeset h1 { font-size: 1.8em; }
+  .md-typeset { font-size: 0.84rem; line-height: 1.7; } /* a hair larger for phones */
+  .md-typeset h1 { font-size: 1.7em; line-height: 1.18; }
+  .md-typeset h2 { font-size: 1.32em; }
+  .md-typeset h3 { font-size: 1.12em; }
+
+  /* Tighter page gutters so prose isn't squeezed on small screens. */
+  .md-content__inner { padding-left: 0.8rem; padding-right: 0.8rem; }
+
+  /* Wide content must scroll, never overflow the viewport. */
+  .md-typeset pre,
+  .md-typeset .highlight,
+  .md-typeset .md-typeset__scrollwrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .md-typeset table:not([class]) { display: block; overflow-x: auto; white-space: nowrap; }
+  .md-typeset .mermaid { overflow-x: auto; padding: 0.6rem; }
+
+  /* Don't let long inline code / URLs blow out the line box. */
+  .md-typeset code { word-break: break-word; }
 }
