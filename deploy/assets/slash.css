@@ -462,3 +462,58 @@ body, input, button {
   /* Don't let long inline code / URLs blow out the line box. */
   .md-typeset code { word-break: break-word; }
 }
+
+/* ==========================================================================
+   MINDMAP READABILITY v1 — "Coverage at a Glance" (00-interview-prep).
+   The upstream mindmap (which we can't edit) drew thick rainbow EDGES that
+   crossed over the topic labels, and node chips were not opaque so the lines
+   bled through the text. Fix, CSS-only: calm + thin the edges (keep their
+   colour, lose the dominance), give every node an OPAQUE dark chip so any
+   crossing edge sits behind the text (SVG paint order: nodes draw after edges),
+   and force legible light labels. Defensive selectors cover Mermaid v10/v11
+   mindmap class variants; unmatched ones are harmless.
+   ========================================================================== */
+
+/* Thin + soften the radiating edges so they stop blocking the topics.
+   (Upstream renders them at ~16.6px stroke — the cause of the clutter.) */
+.md-typeset .mermaid g.mindmap-edges path,
+.md-typeset .mermaid g.edges path.edge,
+.md-typeset .mermaid path.mindmap-edge,
+.md-typeset .mermaid path.edge,
+.md-typeset .mermaid path[class*="edge"] {
+  stroke-width: 2px !important;
+  opacity: 0.45 !important;
+}
+
+/* Opaque node chips (pewter) so labels read on top of any crossing line.
+   Keep the section stroke colour — only the fill is overridden. */
+.md-typeset .mermaid g.mindmap-node > rect,
+.md-typeset .mermaid g.mindmap-node > circle,
+.md-typeset .mermaid g.mindmap-node > ellipse,
+.md-typeset .mermaid g.mindmap-node > polygon,
+.md-typeset .mermaid g.mindmap-node > path,
+.md-typeset .mermaid g.mindmap-node .node-bkg,
+.md-typeset .mermaid g[class*="mindmap-node"] > rect,
+.md-typeset .mermaid g[class*="mindmap-node"] > circle,
+.md-typeset .mermaid g[class*="mindmap-node"] > path {
+  fill: #121317 !important;          /* pewter, opaque */
+  fill-opacity: 1 !important;
+  stroke-width: 1.5px !important;
+}
+
+/* Legible labels on the dark chips. */
+.md-typeset .mermaid g.mindmap-node .mindmap-node-label,
+.md-typeset .mermaid g.mindmap-node foreignObject div,
+.md-typeset .mermaid g.mindmap-node foreignObject span,
+.md-typeset .mermaid g.mindmap-node foreignObject p,
+.md-typeset .mermaid g.mindmap-node text,
+.md-typeset .mermaid g.mindmap-node tspan,
+.md-typeset .mermaid g[class*="mindmap-node"] text,
+.md-typeset .mermaid g[class*="mindmap-node"] tspan {
+  fill: #e2e3e9 !important;
+  color: #e2e3e9 !important;
+  font-weight: 500;
+}
+
+/* A touch more breathing room around the diagram on its card. */
+.md-typeset .mermaid:has(svg[aria-roledescription="mindmap"]) { padding: 1.4rem 1rem; }

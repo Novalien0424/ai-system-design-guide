@@ -65,7 +65,7 @@ extra_css:
   # Cloudflare under the old immutable rule; the version query is a fresh edge
   # cache key. Bump it whenever a hard edge-purge is needed. (Caddy matches on
   # path only, so the cache-control rules still apply to this URL.)
-  - assets/slash.css?v=20260531
+  - assets/slash.css?v=20260531b
 
 extra_javascript:
   - assets/mermaid-init.js
